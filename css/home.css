@@ -5,6 +5,13 @@
     font-size: 1.5vw;
 }
 
+:root
+{
+    --first-color: #e9e9e9;
+    --secondary-color: #b7cbe1;
+    --third-color: #494394;
+}
+
 body
 {
     margin: 0;
@@ -12,7 +19,6 @@ body
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    height: auto;
 }
 
 a
@@ -26,7 +32,6 @@ a
     margin: auto;
     width: 100%;
     height: 6vw;
-    background-color: #3a77f0;
     display: flex;
     line-height: 3vw;
 }
@@ -36,28 +41,49 @@ a
     cursor: pointer;
     margin-left: 2vw;
     z-index: 1001;
-    color: white;
+    color: black;
+    transition: transform 0.3s ease, font-size 0.3s ease;
+    padding: 1vw;
+    text-align: center;
+    line-height: 1vw;
 }
 
-#menu_symbol:hover
+#menu_symbol:hover 
 {
     scale: 1.1;
     transition: 0.3s;
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
+#menu_symbol.open 
+{
+    content: "X";
+    font-size: 2.3vw;
+    background-color: #ff000063;
+    color: white;
+    line-height: 0vw;
+
+}
 /* Menu */
 #menu 
 {
     position: fixed;
     top: 0;
-    left: -30%; /* Ẩn menu */
+    left: 0;
     width: 30%;
     height: 100%;
-    background-color: #1143a6;
+    background-color: var(--third-color);
     color: white;
-    overflow-x: hidden;
-    transition: left 0.5s ease; /* Hiệu ứng trượt */
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 1000;
+}
+
+/* Menu mở */
+#menu.open 
+{
+    transform: translateX(0);
+    left: 0;
 }
 
 #menu ul 
@@ -76,7 +102,6 @@ a
 #menu ul a li 
 {
     color: white;
-    text-decoration: none;
     transition: color 0.3s;
 }
 
@@ -85,66 +110,50 @@ a
     background-color: #aaabbf;
 }
 
-/* Menu mở */
-#menu.open 
-{
-    left: 0; /* Hiển thị menu */
-}
-
-/* Khi Menu mở, đẩy nội dung chính sang phải */
+/* animation đóng mở time */
 body.menu-open #time 
 {
-    margin-left: 30%; /* Đẩy phần Time sang phải */
-}
+    margin-left: 30%;
+}   
 
-body.menu-open #search 
-{
-    width: 10vw; /* Giảm kích thước search */
-}
-
-body.menu-open #search input[type="text"] 
-{
-    width: 0; /* Ẩn phần input */
-    padding: 0;
-    visibility: hidden;
-}
-
-body.menu-open #search button {
-    width: 100%; /* Nút tìm kiếm chiếm toàn bộ search */
-}
-
-/* Trả lại trạng thái ban đầu khi menu đóng */
 body:not(.menu-open) #time 
 {
-    margin-left: 2vw; /* Trở lại vị trí gốc */
+    margin-left: 2vw; 
 }
 
-body:not(.menu-open) #search {
-    width: 35vw; /* Kích thước ban đầu */
-}
-
-body:not(.menu-open) #search input[type="text"] {
-    width: 30vw; /* Hiện input trở lại */
-    visibility: visible;
-}
-
-
-/* Hiệu ứng chuyển đổi cho phần Time và Search */
-#time, #search 
+/* animation đóng mở search */
+body.menu-open #search 
 {
-    transition: all 0.5s ease-in-out;
+    width: 4.3vw;
+}
+
+body:not(.menu-open) #search 
+{
+    width: 35vw; 
+}
+
+
+/* animation đóng mở thân trang */
+body.menu-open .main 
+{
+    margin-left: 30%;
+    transition: margin-left 0.35s ease-in-out;
+}
+
+body:not(.menu-open) .main 
+{
+    margin-left: 0;
+    transition: margin-left 0.3s cubic-bezier(0.25, 0.5, 0.3, 1);
 }
 
 #time 
 {
     width: fit-content;
-    margin-left: 2vw;
     font-weight: bold;
-    color: white;
-    transition: margin-left 0.5s ease-in-out;
+    color: black;
+    transition: margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Thanh tìm kiếm */
 #search 
 {
     margin-left: auto;
@@ -157,26 +166,27 @@ body:not(.menu-open) #search input[type="text"] {
     border: none;
     border-radius: 0.5vw;
     padding-left: 0.5vw;
-    background-color: white;
+    border: #cecece solid;
     display: flex;
     position: relative;
     overflow: hidden;
-    transition: width 0.5s ease-in-out;
+    transition: 
+    width 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+    margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1),
+    opacity 0.5s ease-in-out;
 }
 
-/* Input của thanh tìm kiếm */
 #search input[type="text"] 
 {
     border: 0;
     height: 3vw;
-    width: 30vw; /* Ban đầu chiếm toàn bộ chiều rộng */
+    width: 30vw; 
     line-height: 3vw;
     outline: none;
     background-color: transparent;
     transition: width 0.5s ease-in-out, visibility 0.5s ease-in-out;
 }
 
-/* Nút tìm kiếm */
 #search button 
 {
     background-color: #cecece;
@@ -186,38 +196,7 @@ body:not(.menu-open) #search input[type="text"] {
     right: 0;
     width: 4.5vw;
     height: 3vw;
-    border-radius: 0.5vw;
 }
-
-/* Media Queries: Tự động điều chỉnh kích thước */
-@media (max-width: 1200px) {
-    #search {
-        width: 30%; /* Kích thước giảm khi cửa sổ nhỏ hơn 1200px */
-    }
-}
-
-@media (max-width: 800px) {
-    #search {
-        width: 20%; /* Tiếp tục giảm khi cửa sổ nhỏ hơn 800px */
-    }
-    #search input[type="text"] {
-        visibility: hidden; /* Ẩn input khi kích thước quá nhỏ */
-        width: 0;
-        padding: 0;
-    }
-}
-
-@media (max-width: 500px) 
-{
-    #search {
-        width: 10vw; /* Giảm kích thước chỉ còn 10vw */
-        visibility: hidden; /* Ẩn hoàn toàn */
-    }
-    #search button {
-        width: 4.5vw; /* Chỉ hiển thị nút tìm kiếm */
-    }
-}
-
 
 #search button:hover
 {
@@ -228,7 +207,7 @@ body:not(.menu-open) #search input[type="text"] {
 {
     width: 2vw;
     height: 2vw;
-    margin: 0.3vw;
+    margin: 0.5vw;
     transition: 0.3s;
 }
 
@@ -241,21 +220,6 @@ body:not(.menu-open) #search input[type="text"] {
 .main
 {
    margin-top: 1vw;
-}
-
-
-.left-page
-{
-    width: 30%;
-    height: 100%;
-    float: left;
-}
-
-.right-page
-{
-    width: 70%;
-    height: 100%;
-    float: right;
 }
 
 .switch 
@@ -273,14 +237,14 @@ body:not(.menu-open) #search input[type="text"] {
     height: 4vw;
     cursor: pointer;
     border: none;
-    color: white;
+    color: black;
     transition: width 0.5s ease, background 0.3s;
 }
 
 
 #btn-diendan 
 {
-    background: #aaabbf;
+    background: var(--first-color);
     border-top-right-radius: 1vw;
     border-top-left-radius: 1vw;
 }
@@ -288,7 +252,7 @@ body:not(.menu-open) #search input[type="text"] {
 
 #btn-gopy 
 {
-    background: #2196f3;
+    background: var(--secondary-color);
     border-top-left-radius: 1vw;
 }
 
@@ -305,7 +269,6 @@ body:not(.menu-open) #search input[type="text"] {
     width: 100%;
     margin: auto;
     height: 100vh;
-    overflow: hidden;
     position: relative;
     background: #f9f9f9;
 }
@@ -318,27 +281,24 @@ body:not(.menu-open) #search input[type="text"] {
     top: 0;
     left: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: transform 0.5s ease-in-out, z-index 0.3s;
+    padding: 1vw;
+    transition: transform 0.5s ease-in-out, z-index 0.3s ease-in-out;
 }
 
-
-.diendan {
-    background: #aaabbf;
-    color: white;
-    z-index: 2; 
+.diendan 
+{
+    background: var(--first-color);
+    color: black;
+    z-index: 2;
 }
-
 
 .gopy 
 {
-    background: #2196F3;
-    color: white;
+    background: var(--secondary-color);
+    color: black;
+    z-index: 1;
     transform: translateX(100%);
-    z-index: 1; 
 }
-
 
 .body.active .diendan 
 {
