@@ -1,4 +1,3 @@
-// Lấy các phần tử cần thiết
 const searchInput = document.getElementById('search-input');
 const btnDiendan = document.getElementById('btn-diendan');
 const btnGopy = document.getElementById('btn-gopy');
@@ -7,10 +6,12 @@ const timeBar = document.getElementById('time');
 const searchForm = document.getElementById('search-form');
 
 // Hàm cập nhật placeholder dựa trên nút đang active
-function setInitialPlaceholder() {
+function setInitialPlaceholder() 
+{
     if (btnDiendan.classList.contains('active')) {
         searchInput.placeholder = 'Tìm kiếm trong diễn đàn...';
-    } else if (btnGopy.classList.contains('active')) {
+    } else if (btnGopy.classList.contains('active')) 
+        {
         searchInput.placeholder = 'Tìm kiếm trong góp ý...';
     }
 }
@@ -40,14 +41,16 @@ searchButton.addEventListener('click', (event) => {
             searchInput.style.visibility = 'visible';
             searchInput.style.width = '30vw';
             timeBar.style.marginLeft = '0';
-        } else {
+        } else 
+        {
             // Shrink the search input and show the time bar
             searchInput.style.visibility = 'hidden';
             searchInput.style.width = '0';
             timeBar.style.marginLeft = '2vw';
         }
-    } else {
-        // Submit the form if the search input is visible and has a value
+    } else 
+    {
+
         if (searchInput.style.visibility !== 'hidden' && searchInput.value.trim() !== '') {
             searchForm.submit();
         }
