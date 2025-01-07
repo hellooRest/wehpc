@@ -1,15 +1,15 @@
 *, ::before, ::after
 {
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: sans-serif;
     font-size: 1.5vw;
 }
 
 :root
 {
-    --first-color: #e9e9e9;
-    --secondary-color: #b7cbe1;
-    --third-color: #494394;
+    --first-color: #efefef;
+    --secondary-color: #fbf6f1;
+    --third-color: #ffffff;
 }
 
 body
@@ -19,6 +19,8 @@ body
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    background-color: var(--first-color);
+    position: relative;
 }
 
 a
@@ -27,25 +29,20 @@ a
     color: black;
 }
 
-.home
-{
-    margin: auto;
-    width: 100%;
-    height: 6vw;
-    display: flex;
-    line-height: 3vw;
-}
-
 #menu_symbol 
 {
     cursor: pointer;
-    margin-left: 2vw;
+    margin-left: 3.5vw;
+    margin-top: 1.2vw;
     z-index: 1001;
     color: black;
-    transition: transform 0.3s ease, font-size 0.3s ease;
+    transition: transform 0.3s ease, font-size 0.5s ease;
     padding: 1vw;
     text-align: center;
-    line-height: 1vw;
+    line-height: 0.6vw;
+    position: absolute;
+    border-radius: 0.5vw;
+    height: 2.6vw;
 }
 
 #menu_symbol:hover 
@@ -53,17 +50,32 @@ a
     scale: 1.1;
     transition: 0.3s;
     background-color: rgba(0, 0, 0, 0.2);
+    
 }
 
 #menu_symbol.open 
 {
-    content: "X";
     font-size: 2.3vw;
     background-color: #ff000063;
-    color: white;
-    line-height: 0vw;
+    color: black;
+    line-height: 0.6vw;
 
 }
+
+.home
+{
+    margin: auto;
+    display: flex;
+    line-height: 2vw;
+    background-color: var(--third-color);
+    width: 95%;
+    margin-top: 0.5vw;
+    height: 5vw;
+    border-radius: 1vw;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0.5vw 1vw;
+    transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
+}
+
 /* Menu */
 #menu 
 {
@@ -72,8 +84,7 @@ a
     left: 0;
     width: 30%;
     height: 100%;
-    background-color: var(--third-color);
-    color: white;
+    background-color: var(--first-color);
     transform: translateX(-100%);
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     z-index: 1000;
@@ -99,7 +110,7 @@ a
 
 #menu ul a li 
 {
-    color: white;
+    color: black;
     transition: color 0.3s;
 }
 
@@ -107,8 +118,6 @@ a
 {
     background-color: #aaabbf;
 }
-
-
 
 #menu_overlay 
 {
@@ -133,29 +142,33 @@ body.menu-open
     overflow: hidden;
 }
 
-
-/* đóng mở time */
-body.menu-open #time 
+body.menu-open #time
 {
-    margin-left: 30%;
+    margin-left: 1.5vw;
+}
+
+/* đóng mở thanh home */
+body.menu-open .home 
+{
+    margin-left: 32.5%;
+    width: 64.3%;
 }   
 
-body:not(.menu-open) #time 
+body:not(.menu-open) .home
 {
-    margin-left: 2vw; 
+    margin-left: 1.8vw; 
 }
 
 /* animation đóng mở search */
-body.menu-open #search 
+body.menu-open #search, #search button
 {
-    width: 4.3vw;
+    width: 4.7vw;
 }
 
 body:not(.menu-open) #search 
 {
     width: 35vw; 
 }
-
 
 /* animation đóng mở thân trang */
 body.menu-open .main 
@@ -170,22 +183,30 @@ body:not(.menu-open) .main
     transition: margin-left 0.3s cubic-bezier(0.25, 0.5, 0.3, 1);
 }
 
+#menu ul a li button
+{
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
 #time 
 {
     width: fit-content;
     font-weight: bold;
     color: black;
-    transition: margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    margin-left: 6vw;
 }
 
 #search 
 {
     margin-left: auto;
-    margin-right: 1vw;
+    margin-right: 1.2vw;
     max-width: 35vw;
     height: 3vw;
     line-height: 3vw;
-    margin-top: 1.5%;
+    margin-top: 1vw;
     border: none;
     border-radius: 0.5vw;
     padding-left: 0.5vw;
@@ -193,8 +214,7 @@ body:not(.menu-open) .main
     display: flex;
     position: relative;
     overflow: hidden;
-    transition: 
-    width 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
+    transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
 }
 
 #search input[type="text"] 
@@ -227,7 +247,7 @@ body:not(.menu-open) .main
 {
     width: 2vw;
     height: 2vw;
-    margin: 0.5vw;
+    margin-top: 0.5vw;
     transition: 0.3s;
 }
 
@@ -235,6 +255,155 @@ body:not(.menu-open) .main
 {
     transform: scale(1.1);
 }
+
+/* Popup Login/Register */
+#login-register 
+{
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 1003;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#login-register.active 
+{
+    display: flex;
+    opacity: 1;
+}
+
+/* Khung Popup */
+#login-register .popup-container 
+{
+    background: var(--third-color);
+    width: 30vw;
+    border-radius: 1vw;
+    box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Tabs */
+#login-register .tabs 
+{
+    display: flex;
+    justify-content: center;
+    gap: 0.5vw;
+    overflow: hidden;
+}
+
+#login-register .tabs button 
+{
+    width: 49.75%;
+    height: 4vw;
+    cursor: pointer;
+    border: none;
+    color: black;
+    font-size: 1.2vw;
+    transition: width 0.5s ease, background 0.3s;
+}
+
+#btn-login 
+{
+    background-color: var(--third-color);
+    border-top-left-radius: 1vw;
+}
+
+#btn-register 
+{
+    background-color: var(--secondary-color);
+    border-top-right-radius: 1vw;
+}
+
+#login-register .tabs button.active 
+{
+    width: 70%;
+    font-size: 1.5vw;
+    transition: 0.3s;
+}
+
+/* Container Chuyển Slide */
+#login-register .form-wrapper 
+{
+    width: 200%;
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+#login-register .form-container 
+{
+    width: 50%;
+    padding: 2vw;
+    box-sizing: border-box;
+}
+
+/* Inputs và Buttons */
+#login-register input 
+{
+    width: 100%;
+    margin-bottom: 1vw;
+    padding: 0.8vw;
+    border: 1px solid #ccc;
+    border-radius: 0.5vw;
+    font-size: 1vw;
+}
+
+#login-register button 
+{
+    width: 100%;
+    padding: 0.8vw;
+    color: white;
+    border: none;
+    border-radius: 0.5vw;
+    font-size: 1vw;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#login-register button:hover 
+{
+    background: #388E3C;
+}
+
+/* Nút Đóng Popup */
+#login-register .close-btn 
+{
+    position: absolute;
+    top: 1vw;
+    right: 1vw;
+    font-size: 1.5vw;
+    cursor: pointer;
+    color: #555;
+}
+
+/* Animation Chuyển Slide */
+#login-register .login-section {
+    background: var(--third-color);
+    z-index: 2;
+}
+
+#login-register .register-section {
+    background: var(--secondary-color);
+    transform: translateX(100%);
+    z-index: 1;
+}
+
+#login-register.active .login-section {
+    transform: translateX(-100%);
+    z-index: 1;
+}
+
+#login-register.active .register-section {
+    transform: translateX(0);
+    z-index: 2;
+}
+
 
 /* thân trang */
 .main
@@ -265,7 +434,7 @@ body:not(.menu-open) .main
 
 #btn-diendan 
 {
-    background: var(--first-color);
+    background: var(--third-color);
     border-top-right-radius: 1vw;
     border-top-left-radius: 1vw;
 }
@@ -308,7 +477,7 @@ body:not(.menu-open) .main
 
 .diendan 
 {
-    background: var(--first-color);
+    background: var(--third-color);
     color: black;
     z-index: 2;
 }
