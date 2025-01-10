@@ -1,5 +1,6 @@
 <?php
-include 'function/php/config.php';
+include(__DIR__ . '/config.php');
+
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') 
 {
@@ -13,13 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
     if ($user && $mk === $user['mk']) 
     {
-        $_SESSION['user_id'] = $user['masv'];
+        $_SESSION['masv'] = $user['masv'];
         $_SESSION['ho_va_ten'] = $user['ho_va_ten'];
-        header("Location: home.php");
+        $_SESSION['role'] = $user['role'];
+        header("Location: " . $base_url);
         exit();
-    } else 
+    } 
+    else 
     {
-        echo "Mã Sinh viên hoặc Mật khẩu không chính xác!";
+        echo "<script>
+                alert('Mã Sinh viên hoặc Mật khẩu không chính xác!');
+              </script>";
+              
     }
 }
 ?>

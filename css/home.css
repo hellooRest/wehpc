@@ -1,7 +1,7 @@
 *, ::before, ::after
 {
     box-sizing: border-box;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     font-size: 1.5vw;
 }
 
@@ -18,9 +18,31 @@ body
     padding: 0;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
     background-color: var(--first-color);
     position: relative;
+}
+
+.trending:hover 
+{
+    overflow-y: scroll;
+}
+
+.trending::-webkit-scrollbar 
+{
+    width: 0.45vw;
+    background-color: none; 
+}
+
+.trending::-webkit-scrollbar-thumb 
+{
+    background: #888;
+    border-radius: 1vw;
+}
+
+.trending::-webkit-scrollbar-thumb:hover 
+{
+    background: #555;
+    
 }
 
 a
@@ -43,6 +65,7 @@ a
     position: absolute;
     border-radius: 0.5vw;
     height: 2.6vw;
+    font-family: sans-serif;
 }
 
 #menu_symbol:hover 
@@ -82,7 +105,7 @@ a
     position: fixed;
     top: 0;
     left: 0;
-    width: 30%;
+    width: 25%;
     height: 100%;
     background-color: var(--first-color);
     transform: translateX(-100%);
@@ -150,13 +173,13 @@ body.menu-open #time
 /* đóng mở thanh home */
 body.menu-open .home 
 {
-    margin-left: 32.5%;
-    width: 64.3%;
+    margin-left: 27.5%;
+    width: 70%;
 }   
 
 body:not(.menu-open) .home
 {
-    margin-left: 1.8vw; 
+    margin-left: 2.5vw; 
 }
 
 /* animation đóng mở search */
@@ -173,8 +196,8 @@ body:not(.menu-open) #search
 /* animation đóng mở thân trang */
 body.menu-open .main 
 {
-    margin-left: 30%;
-    transition: margin-left 0.35s ease-in-out;
+    margin-left: 25%;
+    transition: margin-left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 body:not(.menu-open) .main 
@@ -196,7 +219,7 @@ body:not(.menu-open) .main
     width: fit-content;
     font-weight: bold;
     color: black;
-    margin-left: 6vw;
+    margin-left: 5vw;
 }
 
 #search 
@@ -205,7 +228,6 @@ body:not(.menu-open) .main
     margin-right: 1.2vw;
     max-width: 35vw;
     height: 3vw;
-    line-height: 3vw;
     margin-top: 1vw;
     border: none;
     border-radius: 0.5vw;
@@ -287,6 +309,7 @@ body:not(.menu-open) .main
     box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.3);
     overflow: hidden;
     position: relative;
+    background-color: var(--first-color);
 }
 
 /* Tabs */
@@ -313,18 +336,20 @@ body:not(.menu-open) .main
 {
     background-color: var(--third-color);
     border-top-left-radius: 1vw;
+    border-top-right-radius: 1vw;
 }
 
 #btn-register 
 {
     background-color: var(--secondary-color);
     border-top-right-radius: 1vw;
+    border-top-left-radius: 1vw;
 }
 
 #login-register .tabs button.active 
 {
     width: 70%;
-    font-size: 1.5vw;
+    font-size: 1.4vw;
     transition: 0.3s;
 }
 
@@ -358,48 +383,64 @@ body:not(.menu-open) .main
 {
     width: 100%;
     padding: 0.8vw;
-    color: white;
     border: none;
-    border-radius: 0.5vw;
-    font-size: 1vw;
+    font-size: 1.2vw;
     cursor: pointer;
     transition: background 0.3s;
 }
 
-#login-register button:hover 
+#login button, #register button
 {
-    background: #388E3C;
+    color: white;
+    background-color: #ff7700;
+    border-radius: 1vw;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 0.5vw 0.5vw;
+}
+
+#login button:hover, #register button:hover
+{
+    background-color: #BF360C;
 }
 
 /* Nút Đóng Popup */
 #login-register .close-btn 
 {
     position: absolute;
-    top: 1vw;
-    right: 1vw;
+    top: 0.1vw;
+    right: 0.5vw;
     font-size: 1.5vw;
     cursor: pointer;
-    color: #555;
+    color: red;
 }
 
 /* Animation Chuyển Slide */
-#login-register .login-section {
+#login-register .login-section,
+#login-register .register-section 
+{
+    transition: transform 0.5s ease-in-out;
+}
+
+#login-register .login-section 
+{
     background: var(--third-color);
+    transform: translateX(0%);
     z-index: 2;
 }
 
-#login-register .register-section {
+#login-register .register-section 
+{
     background: var(--secondary-color);
     transform: translateX(100%);
     z-index: 1;
 }
 
-#login-register.active .login-section {
-    transform: translateX(-100%);
+#login-register.active .login-section 
+{
     z-index: 1;
 }
 
-#login-register.active .register-section {
+#login-register.active .register-section 
+{
     transform: translateX(0);
     z-index: 2;
 }
@@ -408,8 +449,11 @@ body:not(.menu-open) .main
 /* thân trang */
 .main
 {
-   margin-top: 1vw;
-   z-index: 500;
+    height: 100%;
+    margin-top: 1vw;
+    z-index: 500;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .switch 
@@ -427,7 +471,7 @@ body:not(.menu-open) .main
     height: 4vw;
     cursor: pointer;
     border: none;
-    color: black;
+    color: rgb(85, 85, 85);
     transition: width 0.5s ease, background 0.3s;
 }
 
@@ -449,8 +493,10 @@ body:not(.menu-open) .main
 .switch button.active
 {
     width: 70%;
-    font-size: 2vw;
+    font-size: 1.7vw;
     transition: 0.3s;
+    text-shadow: rgba(1, 1, 0, 0.366) 0 0.5vw 1vw;
+    color: rgb(44, 44, 44);
 }
 
 
@@ -466,7 +512,7 @@ body:not(.menu-open) .main
 .diendan, .gopy 
 {
     width: 100%;
-    height: 100%;
+    height: fit-content;
     position: absolute;
     top: 0;
     left: 0;
@@ -478,8 +524,10 @@ body:not(.menu-open) .main
 .diendan 
 {
     background: var(--third-color);
-    color: black;
+    color: rgb(54, 54, 54);
     z-index: 2;
+    display: flex;
+    gap: 1%;
 }
 
 .gopy 
@@ -502,32 +550,88 @@ body:not(.menu-open) .main
     z-index: 2;
 }
 
-.diendan-btn, .gopy-btn 
+.trending
+{
+    width: 24.5%;
+    word-wrap: break-word;
+    padding: 0.5vw;
+    position: relative;
+    box-shadow: rgba(0, 0, 0, 0.11) 0.1vw 0.1vw 1vw;
+    height: auto;
+    max-height: 77.5vh;
+    overflow-y: hidden;
+    padding: 1vw;
+    transition: overflow 0.5s ease;
+}
+
+.baiviet    
+{
+    width: 74.5%;
+    height: fit-content;
+    margin-left: auto;
+    padding: 1vw;
+    box-shadow: rgba(0, 0, 0, 0.1) 0.1vw 0.1vw 1vw;
+}
+
+.trending:hover 
+{
+    overflow-y: scroll;
+}
+
+.trending::-webkit-scrollbar 
+{
+    width: 0.45vw;
+    background-color: none; 
+}
+
+.trending::-webkit-scrollbar-thumb 
+{
+    background: #888;
+    border-radius: 1vw;
+}
+
+.trending::-webkit-scrollbar-thumb:hover 
+{
+    background: #555;
+    
+}
+
+.trending h1 
+{
+    text-align: center;
+    margin-top: 0;
+    
+}
+
+.baiviet-btn, .trending-btn
 {
     position: absolute; 
-    bottom: 25vh;
-    right: 4vw;
+    bottom: 10vh;
+    right: 10vw;
     z-index: 999;
     width: 8vh;
     height: 8vh;
     font-size: 2.5vw;
-    background: #D84315;
+    background: #FF9800;
     color: white;
     border: none;
     border-radius: 10vw;
     cursor: pointer;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: background 0.3s;
+    font-family: sans-serif;
 }
 
-.diendan-btn 
-{
-    background: #FF9800;
-    right: auto;
-    left: 4vw;
-}
-
-.diendan-btn:hover, .gopy-btn:hover 
+.baiviet-btn:hover, .trending-btn:hover 
 {
     background: #BF360C;
+}
+
+.baiviet #post
+{
+    width: 60%;
+    height: 4vw;
+    background-color: rgba(234, 234, 234, 0.542);
+    margin: auto;
+    padding: 1vw;
 }

@@ -1,24 +1,26 @@
 // Toggle Hiển Thị Popup
-function togglePopup() {
+function togglePopup() 
+{
     const popup = document.getElementById('login-register');
     popup.classList.toggle('active');
     document.body.classList.toggle('menu-open');
 }
 
 // Chuyển Đổi Giữa Tabs
-function switchTab(tab) {
+function switchTab(tab) 
+{
+    const loginBtn = document.getElementById('btn-login');
+    const registerBtn = document.getElementById('btn-register');
     const formWrapper = document.getElementById('form-wrapper');
-    const loginTab = document.getElementById('btn-login');
-    const registerTab = document.getElementById('btn-register');
 
     if (tab === 'login') {
-        formWrapper.style.transform = 'translateX(0)';
-        loginTab.classList.add('active');
-        registerTab.classList.remove('active');
-    } else {
+        loginBtn.classList.add('active');
+        registerBtn.classList.remove('active');
+        formWrapper.style.transform = 'translateX(0%)';
+    } else if (tab === 'register') {
+        registerBtn.classList.add('active');
+        loginBtn.classList.remove('active');
         formWrapper.style.transform = 'translateX(-50%)';
-        loginTab.classList.remove('active');
-        registerTab.classList.add('active');
     }
 }
 

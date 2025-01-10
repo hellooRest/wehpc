@@ -2,7 +2,7 @@
 session_start();
 
 $host = 'localhost'; 
-$dbname = 'wehpc';
+$dbname = 'diendan';
 $username = 'root'; 
 $password = '';       
 
