@@ -17,32 +17,10 @@ body
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100vh;
+    height: 89vh;
     background-color: var(--first-color);
     position: relative;
-}
-
-.trending:hover 
-{
-    overflow-y: scroll;
-}
-
-.trending::-webkit-scrollbar 
-{
-    width: 0.45vw;
-    background-color: none; 
-}
-
-.trending::-webkit-scrollbar-thumb 
-{
-    background: #888;
-    border-radius: 1vw;
-}
-
-.trending::-webkit-scrollbar-thumb:hover 
-{
-    background: #555;
-    
+    overflow-y: auto;
 }
 
 a
@@ -56,7 +34,7 @@ a
     cursor: pointer;
     margin-left: 3.5vw;
     margin-top: 1.2vw;
-    z-index: 1001;
+    z-index: 1011;
     color: black;
     transition: transform 0.3s ease, font-size 0.5s ease;
     padding: 1vw;
@@ -66,6 +44,7 @@ a
     border-radius: 0.5vw;
     height: 2.6vw;
     font-family: sans-serif;
+    
 }
 
 #menu_symbol:hover 
@@ -97,10 +76,11 @@ a
     border-radius: 1vw;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0.5vw 1vw;
     transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
+    z-index: 1010;
 }
 
 /* Menu */
-#menu 
+.home #menu 
 {
     position: fixed;
     top: 0;
@@ -116,6 +96,7 @@ a
 #menu.open 
 {
     transform: translateX(0);
+    box-shadow: rgba(0, 0, 0, 0.2) 0.5vw 0 2vw;
 }
 
 #menu ul 
@@ -142,6 +123,19 @@ a
     background-color: #aaabbf;
 }
 
+#btn-logout
+{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+
+#btn-logout li
+{
+    background-color: #ff000063;
+}
+
 #menu_overlay 
 {
     display: none;
@@ -150,7 +144,7 @@ a
     left: 0;
     width: 100vw;
     height: 100vw;
-    margin-left: 30vw;
+    margin-left: 25vw;
     justify-content: right;
     z-index: 1000;
 }
@@ -214,7 +208,7 @@ body:not(.menu-open) .main
     padding: 0;
 }
 
-#time 
+.home #time 
 {
     width: fit-content;
     font-weight: bold;
@@ -222,7 +216,7 @@ body:not(.menu-open) .main
     margin-left: 5vw;
 }
 
-#search 
+.home #search 
 {
     margin-left: auto;
     margin-right: 1.2vw;
@@ -239,7 +233,7 @@ body:not(.menu-open) .main
     transition: width 0.45s cubic-bezier(0.25, 1, 0.5, 1), margin-left 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease-in-out;
 }
 
-#search input[type="text"] 
+.home #search input[type="text"] 
 {
     border: 0;
     height: 3vw;
@@ -249,7 +243,7 @@ body:not(.menu-open) .main
     background-color: transparent;
 }
 
-#search button 
+.home #search button 
 {
     background-color: #cecece;
     border: none;
@@ -265,7 +259,7 @@ body:not(.menu-open) .main
     background-color: #9c9b9b;
 }
 
-#search button img
+.home #search button img
 {
     width: 2vw;
     height: 2vw;
@@ -303,7 +297,6 @@ body:not(.menu-open) .main
 /* Khung Popup */
 #login-register .popup-container 
 {
-    background: var(--third-color);
     width: 30vw;
     border-radius: 1vw;
     box-shadow: 0 0.5vw 1vw rgba(0, 0, 0, 0.3);
@@ -413,6 +406,11 @@ body:not(.menu-open) .main
     color: red;
 }
 
+#login-register .close-btn:hover
+{
+    scale: 1.1;
+    color: darkred;
+}
 /* Animation Chuyển Slide */
 #login-register .login-section,
 #login-register .register-section 
@@ -423,40 +421,26 @@ body:not(.menu-open) .main
 #login-register .login-section 
 {
     background: var(--third-color);
-    transform: translateX(0%);
-    z-index: 2;
+    z-index: 1;
 }
 
 #login-register .register-section 
 {
     background: var(--secondary-color);
-    transform: translateX(100%);
     z-index: 1;
 }
-
-#login-register.active .login-section 
-{
-    z-index: 1;
-}
-
-#login-register.active .register-section 
-{
-    transform: translateX(0);
-    z-index: 2;
-}
-
 
 /* thân trang */
 .main
 {
     height: 100%;
-    margin-top: 1vw;
     z-index: 500;
-    overflow-y: scroll;
+    margin-top: 1vw;
     overflow-x: hidden;
+    position: relative;
 }
 
-.switch 
+.main .switch 
 {
     display: flex;
     justify-content: center;
@@ -495,7 +479,7 @@ body:not(.menu-open) .main
     width: 70%;
     font-size: 1.7vw;
     transition: 0.3s;
-    text-shadow: rgba(1, 1, 0, 0.366) 0 0.5vw 1vw;
+    text-shadow: rgba(1, 1, 0, 0.366) 0 0.5 1vw;
     color: rgb(44, 44, 44);
 }
 
@@ -506,7 +490,6 @@ body:not(.menu-open) .main
     margin: auto;
     height: 100vh;
     position: relative;
-    background: #f9f9f9;
 }
 
 .diendan, .gopy 
@@ -528,6 +511,7 @@ body:not(.menu-open) .main
     z-index: 2;
     display: flex;
     gap: 1%;
+    height: 100%;
 }
 
 .gopy 
@@ -558,7 +542,7 @@ body:not(.menu-open) .main
     position: relative;
     box-shadow: rgba(0, 0, 0, 0.11) 0.1vw 0.1vw 1vw;
     height: auto;
-    max-height: 77.5vh;
+    max-height: 65vh;
     overflow-y: hidden;
     padding: 1vw;
     transition: overflow 0.5s ease;
@@ -567,10 +551,16 @@ body:not(.menu-open) .main
 .baiviet    
 {
     width: 74.5%;
-    height: fit-content;
+    height: 100%;
     margin-left: auto;
     padding: 1vw;
     box-shadow: rgba(0, 0, 0, 0.1) 0.1vw 0.1vw 1vw;
+}
+
+.trending h1 
+{
+    text-align: center;
+    margin-top: 0;    
 }
 
 .trending:hover 
@@ -593,14 +583,6 @@ body:not(.menu-open) .main
 .trending::-webkit-scrollbar-thumb:hover 
 {
     background: #555;
-    
-}
-
-.trending h1 
-{
-    text-align: center;
-    margin-top: 0;
-    
 }
 
 .baiviet-btn, .trending-btn
@@ -633,5 +615,168 @@ body:not(.menu-open) .main
     height: 4vw;
     background-color: rgba(234, 234, 234, 0.542);
     margin: auto;
-    padding: 1vw;
+    border-radius: 0.5vw;
 }
+
+
+#post-btn, #post-btn1
+{
+    width: 100%;
+    line-height: 4vw;
+    border: none;
+    color: rgb(85, 85, 85);
+    background-color: transparent;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* Popup thêm bài viết diễn đàn */
+#add-post-popup 
+{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1005;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+#add-post-popup.active 
+{
+    display: flex;
+    opacity: 1;
+}
+
+/* Container của Popup */
+#add-post-popup .popup-content 
+{
+    background-color: white;
+    width: 45vw;
+    min-height: 35vh;
+    padding: 2vw;
+    border-radius: 1.5vw;
+    box-shadow: 0 0 1vw rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden; 
+}
+
+
+/* Nút Đóng Popup */
+#add-post-popup .close-btn 
+{
+    position: absolute;
+    top: 1vw;
+    right: 1vw;
+    font-size: 2vw;
+    cursor: pointer;
+    color: #ff4444; /* Thay màu cho nút đóng */
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+#add-post-popup .close-btn:hover 
+{
+    transform: scale(1.1);
+    color: darkred;
+}
+
+/* Tiêu đề */
+#add-post-popup h2 
+{
+    text-align: center;
+    font-size: 2vw;
+    color: #333;
+    margin-bottom: 1.5vw;
+    margin-top: 0;
+}
+
+/* Nội dung*/
+#add-post-popup textarea 
+{
+    width: 100%;
+    height: 15vw;
+    padding: 1.5vw;
+    border: 1px solid #ccc;
+    border-radius: 0.8vw;
+    font-size: 1.1vw;
+    outline: none;
+    resize: none;
+    transition: border-color 0.3s ease;
+}
+
+#add-post-popup textarea:focus 
+{
+    border-color: #ff7700;
+}
+
+#add-post-popup input[type="text"] 
+{
+    width: 100%;
+    padding: 1.2vw;
+    margin-bottom: 2vw; /* Thêm khoảng cách giữa các input */
+    border: 1px solid #ccc;
+    border-radius: 0.8vw;
+    font-size: 1.1vw;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+#add-post-popup input[type="text"]:focus 
+{
+    border-color: #ff7700;
+}
+
+/* Nút Đăng Bài */
+#add-post-popup button 
+{
+    width: 100%;
+    padding: 1.2vw;
+    margin-top: 1.5vw;
+    border: none;
+    font-size: 1.5vw;
+    cursor: pointer;
+    background-color: #ff7700;
+    color: white;
+    border-radius: 0.8vw;
+    transition: background 0.3s ease;
+}
+
+#add-post-popup button:hover 
+{
+    background-color: #BF360C;
+}
+
+.success-message, .error-message 
+{
+    transition: opacity 1s ease-out;
+    opacity: 1;
+}
+
+.success-message.hidden, .error-message.hidden 
+{
+    opacity: 0;
+    visibility: hidden;
+}
+
+.success-message 
+{
+    color: green;
+    background-color: #d4edda;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.error-message 
+{
+    color: red;
+    background-color: #f8d7da;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+

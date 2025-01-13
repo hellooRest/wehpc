@@ -19,10 +19,10 @@ include('function/php/config.php');
                 <?php
                 if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) 
                 {
-                    echo "<li style='color=red;'>Xin chào, " . htmlspecialchars($_SESSION['ho_va_ten']) . "</li>";
+                    echo "<li>Xin chào, " . htmlspecialchars($_SESSION['ho_va_ten']) . "</li>";
                     echo "<a href='#'><li>Tài khoản</li></a>";
                     echo "<a href='#'><li>Xem thời khóa biểu</li></a>";
-                    echo "<a href='function/php/logout.php'><li>Đăng xuất</li></a>";
+                    
                 } 
                 else 
                 {
@@ -31,6 +31,14 @@ include('function/php/config.php');
                 ?>
                     <a href="#"><li>Liên Hệ</li></a>
                     <a href="https://tuyensinh.bachkhoahanoi.edu.vn/"><li>Về Nhà Trường</li></a>
+                </ul>
+                <ul id="btn-logout">
+                    <?php
+                        if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) 
+                        {
+                            echo "<a href='function/php/logout.php'><li>Đăng xuất</li></a>";
+                        }
+                    ?>
                 </ul>
             </div>
             
@@ -43,7 +51,7 @@ include('function/php/config.php');
                 </form>
             </span>
         </div>
-            
+ 
         <!-- Thân Trang -->
         <div class="main">
             <div class="switch">
@@ -55,87 +63,54 @@ include('function/php/config.php');
                 <div class="diendan">
                     <div class="trending">
                         <h1>Trending</h1>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        
                     </div>
                     <div class="baiviet">
                         <div id="post">
                             <?php
                                 if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) 
                                 {
-                                    echo "Xin chào, " . htmlspecialchars($_SESSION['ho_va_ten']) . "";
-                                }
+                                    echo '<button id="post-btn" onclick="toggleAddPostPopup()">';
+                                    echo "Xin chào " . htmlspecialchars($_SESSION['ho_va_ten']) . ", bạn muốn chia sẻ điều gì?";
+                                    echo '</button>';
+                                } 
                                 else
                                 {
-                                    echo 'Hôm nay bạn thế nào';
+                                    echo '<button id="post-btn1" onclick="togglePopup()">Hôm nay bạn thế nào</button>';
                                 }
                             ?>
-                        </div>
+                        </div>      
+                        <?php
+                        if (isset($_SESSION['message'])) 
+                        {
+                            echo "<div class='success-message'>" . $_SESSION['message'] . "</div>";
+                            unset($_SESSION['message']); 
+                        }
 
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p><p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
-                        <p>sadfsad</p>
+                        if (isset($_SESSION['error'])) 
+                        {
+                            echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
+                            unset($_SESSION['error']);
+                        }
+                        ?>
+
+                        <?php
+                        $sql = "SELECT * FROM post ORDER BY date DESC, time DESC";
+                        $stmt = $pdo_diendan->prepare($sql);
+                        $stmt->execute();
+                        $posts = $stmt->fetchAll();
+
+                        if ($posts) 
+                        {
+                            foreach ($posts as $post) 
+                            {
+                                echo "<div class='post-item'>";
+                                echo "<small>Đăng bởi: " . htmlspecialchars($post['ho_va_ten']) . " vào " . $post['date'] . " lúc " . $post['time'] . "</small>";
+                                echo "<h3>" . htmlspecialchars($post['title']) . "</h3>";
+                                echo "<p>" . htmlspecialchars($post['content']) . "</p>";
+                                echo "</div>";
+                            }
+                        } 
+                        ?>                
                     </div>
                 </div>
         
@@ -170,6 +145,23 @@ include('function/php/config.php');
                 echo '<button class="baiviet-btn">+</button>';
             }
         ?>
+
+        <!-- Thêm bài viết diễn đàn -->
+        <div id="add-post-popup">
+            <div class="popup-content">
+            <span class="close-btn" onclick="toggleAddPostPopup()">✖</span>
+            <div class="form-wrapper">
+                <form action="function/php/save_post.php" method="POST">
+                    <h2>Thêm bài viết mới</h2>
+                    <input type="text" name="title" placeholder="Tiêu đề bài viết" required />
+                    <textarea name="content" placeholder="Nội dung bài viết" rows="5" required></textarea>
+                    <button type="submit">Đăng bài</button>
+                </form>
+            </div>
+        </div>
+        </div> 
+
+
         <!-- Popup Đăng Nhập/Đăng Ký -->
         <div id="login-register">
             <div class="popup-container">
@@ -186,6 +178,7 @@ include('function/php/config.php');
                             <button type="submit">Đăng Nhập</button>
                         </form>
                     </div>
+
                     <div id="register" class="form-container register-section">
                         <form action="function/php/register.php" method="POST">
                             <input type="text" name="masv" placeholder="Mã sinh viên" required />
@@ -199,6 +192,8 @@ include('function/php/config.php');
             </div>
         </div>
         
+        <script src="/function/java/post-status.js"></script>
+        <script src="/function/java/post-popup.js" ></script>
         <script src="/function/java/scrollbar.js"></script>
         <script src="/function/java/time.js"></script>
         <script src="/function/java/popup.js"></script>
