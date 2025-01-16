@@ -32,6 +32,5 @@ function updateTimeDisplay(date)
   document.getElementById('time').innerText = `${day}, ${hours}:${minutes}`;
 }
 
-// Cập nhật thời gian mỗi phút
 fetchTimeFromServer();
-setInterval(fetchTimeFromServer, 60000);
+setInterval(fetchTimeFromServer, 5000);

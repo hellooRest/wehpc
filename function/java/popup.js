@@ -9,13 +9,14 @@ function togglePopup()
         popup.classList.remove("active");
         menu.style.pointerEvents = "auto"; // Cho phép tương tác với menu trái
         if (overlay) overlay.style.display = "none"; // Ẩn overlay nếu tồn tại
-    } else {
+    } 
+    else 
+    {
         popup.classList.add("active");
         menu.style.pointerEvents = "none"; // Vô hiệu hóa tương tác với menu trái khi popup mở
         if (overlay) overlay.style.display = "block"; // Hiển thị overlay nếu tồn tại
     }
 }
-
 
 // Chuyển Đổi Giữa Tabs
 function switchTab(tab) 
@@ -45,6 +46,7 @@ document.querySelector('form[action="#login-register"] button').addEventListener
     togglePopup();
 });
 
+// Hiển thị thêm bài viết//
 function toggleAddPostPopup() 
 {
     const addPostPopup = document.getElementById("add-post-popup");

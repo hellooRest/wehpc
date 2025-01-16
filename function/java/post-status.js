@@ -9,4 +9,4 @@
         if (errorMessage) {
             errorMessage.style.display = 'none';
         }
-    }, 3500); 
+    }, 4000); 
