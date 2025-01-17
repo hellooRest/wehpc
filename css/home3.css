@@ -464,6 +464,13 @@ body:not(.menu-open) .main
     position: relative;
 }
 
+.main .thongbao
+{
+    margin-top: 6.5vw;
+    width: 100%;
+    text-align: center;
+}
+
 .main .switch 
 {
     display: flex;
@@ -471,7 +478,7 @@ body:not(.menu-open) .main
     align-items: center;
     overflow: hidden;
     gap: 0.5vw;
-    margin-top: 6.5vw;
+    margin-top: 0.5vw;
 }
 
 .switch button 
@@ -586,6 +593,37 @@ body:not(.menu-open) .main
     margin-left: 1vw;
 }
 
+.trending-post 
+{
+    min-height: 8vw;
+    height: fit-content;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.trending-post h2 
+{
+    font-size: 1vw;
+    margin-bottom: 10px;
+}
+
+.trending-post p 
+{
+    margin: 0;
+    font-size: 0.8vw;
+}
+
+.trending-post p strong 
+{
+    font-weight: bold;
+    font-size: 1vw;
+    color: #FF9800;
+}
+
 .trending:hover 
 {
     overflow-y: scroll;
@@ -628,6 +666,11 @@ body:not(.menu-open) .main
     font-family: sans-serif;
 }
 
+.trending-btn:hover 
+{
+    background: #BF360C;
+}
+
 .baiviet    
 {
     width: 74.5%;
@@ -636,12 +679,7 @@ body:not(.menu-open) .main
     padding: 1vw;
 }
 
-.baiviet-btn:hover, .trending-btn:hover 
-{
-    background: #BF360C;
-}
-
-.baiviet #post
+#post
 {
     width: 60%;
     height: 4vw;
@@ -650,6 +688,7 @@ body:not(.menu-open) .main
     border-radius: 0.5vw;
     margin-bottom: 1vw;
     box-shadow: rgba(0, 0, 0, 0.2) 0 0 0.5vw;
+    transition: margin-left 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 #post:hover
@@ -666,6 +705,11 @@ body:not(.menu-open) .main
     background-color: transparent;
     cursor: pointer;
     transition: background 0.3s;
+}
+
+body.menu-open #post-btn
+{
+    margin-left: 0vw;
 }
 
 /* Popup thêm bài viết diễn đàn */
@@ -827,16 +871,37 @@ body.menu-open .popup-content
 
 .post-item 
 {
-    width: 100%;
+    width: 80%;
+    margin: auto;
     height: 18vw;
     background-color: var(--first-color);
     padding: 1vw;
+    padding-top: 0;
     margin-bottom: 1vw;
     border-radius: 0.5vw;
     position: relative;
     overflow-y: hidden;
     padding-right: 1.5vw;
 }
+
+.vote
+{
+    background-color: #c2c2c2;
+    border-radius: 0.8vw;
+}
+
+.ptvote 
+{
+    position: sticky;
+    top: 14vw;
+    left: 1vw;
+    z-index: 10;
+    display: flex;
+    align-items: left; 
+    padding: 0.5vw;
+    border-radius: 0.5vw;
+}
+
 
 .post-item:hover 
 {
@@ -914,7 +979,6 @@ body.menu-open .popup-content
     right: 0.5vw;
     background-color: var(--third-color);
     width: 10vw;
-    text-align: center;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -923,11 +987,13 @@ body.menu-open .popup-content
 {
     display: block;
 }
- .dropdown-btn
+
+ .menu-dropdown .dropdown-btn
 {
     width: 100%;
     display: block;
     padding: 0.5vw 0;
+    line-height: 1vw;
     color: #333;
     text-decoration: none;
     text-align: center;
@@ -945,6 +1011,23 @@ body.menu-open .popup-content
     margin-top: 0.5vw;
     position: absolute;
     bottom: 10;
+}
+
+.post-item .vote-count1, .post-item .vote-count2
+{
+    background-color: #d6d6d6;
+    padding: 0.2vw;
+    border-radius: 0.5vw;
+}
+
+.post-item .vote-count1
+{
+    color: rgb(0, 212, 0);
+}
+
+.post-item .vote-count2
+{
+    color: rgb(255, 0, 0);
 }
 
 .post-item button 

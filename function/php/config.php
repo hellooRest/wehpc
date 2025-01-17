@@ -1,6 +1,5 @@
 <?php
     session_start();
-
 $host = 'localhost';
 $dbname = 'wehpc';  // Cập nhật lại tên cơ sở dữ liệu
 $username = 'root';

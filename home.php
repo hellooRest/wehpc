@@ -6,6 +6,8 @@ if (isset($_GET['popup'])) {
     echo "<script>document.addEventListener('DOMContentLoaded', function() { togglePopup(); switchTab('$popup'); });</script>";
 }
 
+$isLoggedIn = isset($_SESSION['masv']) ? true : false;
+
 // Lấy lỗi đăng nhập/đăng ký (nếu có)
 $error_message = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : [];
 unset($_SESSION['error_message']); // Xóa lỗi sau khi load
@@ -16,7 +18,7 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
     <head>
         <meta charset="utf-8" />
         <title>Wehpc - Trang chủ</title>
-        <link rel="stylesheet" href="css/home.css" type="text/css"/>
+        <link rel="stylesheet" href="css/home3.css" type="text/css"/>
     </head>
     
     <body>
@@ -56,21 +58,51 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
             </div>
             
             <div id="menu_overlay"></div>
-            <p id="time">Loadding...</p>
-            <script src="function/java/time.js"></script>
+            <p id="time">09:20, Thứ Sáu</p>
+            <!-- <script src="function/java/time.js"></script> -->
             <span id="search">
                 <form id="search-form" action="/function/php/search.php" method="post">
-                    <input type="text" name="search" id="search-input" />
+                    <input type="text" 
+                    name="search" 
+                    id="search-input" 
+                    placeholder="Tìm kiếm trong diễn đàn..." 
+                    value="<?php echo htmlspecialchars($_SESSION['search_term'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" 
+                    />
                     <input type="hidden" name="active_section" id="active-section" value="diendan" />
                     <button type="submit" id="search-button">
                         <img src="icon/search-analytics.png" />
                     </button>
                 </form>
             </span>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const searchInput = document.getElementById('search-input');
+                const searchTerm = '<?php echo isset($_SESSION["search_term"]) ? $_SESSION["search_term"] : ""; ?>';
+
+                if (!searchInput.value.trim() && searchTerm) {
+                    searchInput.value = searchTerm;
+                }
+            });
+            </script>
+
         </div>
  
         <!-- Thân Trang -->
         <div class="main">
+            <div class="thongbao">
+            <?php
+                if (isset($_SESSION['message'])) {
+                    echo "<div class='success-message'>" . $_SESSION['message'] . "</div>";
+                    unset($_SESSION['message']);
+                }
+
+                if (isset($_SESSION['error'])) {
+                    echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
+                    unset($_SESSION['error']);
+                }
+            ?>
+            </div>
             <div class="switch">
                 <button id="btn-diendan" class="active">Diễn Đàn</button>
                 <button id="btn-gopy">Góp Ý</button>
@@ -78,237 +110,296 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
         
             <div class="body">
                 <div class="diendan">
-                    <div class="trending">
-                        <h1>Trending</h1>
-                        <?php
-                        if(isset($_SESSION['role']) == "admin")
+                <div class="trending">
+                    <h1>Trending</h1>
+                    <?php
+                    // Kiểm tra quyền admin
+                    if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
+                        echo '<button class="trending-btn">+</button>';
+                    }
+                    
+                    // Lấy 3 bài viết có số vote cao nhất
+                    $stmt = $pdo_diendan->prepare("
+                        SELECT 
+                            id, title, ho_va_ten, content, date, time, 
+                            (SELECT SUM(vote) FROM diendanvote WHERE diendanvote.id = diendanpost.id) AS total_votes
+                        FROM diendanpost
+                        ORDER BY total_votes DESC
+                        LIMIT 3
+                    ");
+                    $stmt->execute();
+                    $trendingPosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    // Hiển thị bài viết
+                    foreach ($trendingPosts as $post) 
                         {
-                            echo '<button class="trending-btn">+</button>';
+                        $title = htmlspecialchars($post['title']);
+                        $ho_va_ten = htmlspecialchars($post['ho_va_ten']);
+                        $content = nl2br(htmlspecialchars($post['content']));
+                        $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/Y');
+                        $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
+                        $totalVotes = $post['total_votes'] ?? 0;
+
+                        echo "<div class='trending-post'>";
+                        echo "<h2>{$title}</h2>";
+                        echo "<p><strong>{$ho_va_ten}</strong> ";
+                        echo "</br>";
+                        echo "{$date} lúc {$time}</p>";
+                        echo "<p><strong>Votes:</strong> {$totalVotes}</p>";
+                        echo "</div>";
+                    }
+                    ?>
+                </div>
+                <div class="baiviet">
+                    <div id="post">
+                        <?php
+                        if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
+                            echo '<button id="post-btn" onclick="toggleAddPostPopup()">';
+                            echo "Xin chào " . htmlspecialchars($_SESSION['ho_va_ten']) . ", bạn muốn chia sẻ điều gì?";
+                            echo '</button>';
+                        } else {
+                            echo '<button id="post-btn1" onclick="togglePopup()">Hôm nay bạn thế nào!!!</button>';
                         }
                         ?>
                     </div>
-                    <div class="baiviet">
+                    <?php
+                    // Lấy danh sách ID bài viết khớp với tìm kiếm
+                    $searchIds = $_SESSION['search_ids'] ?? null;
 
-                        <div id="post">
-                            <?php
+                    $sql = "SELECT * FROM diendanpost ORDER BY date DESC, time DESC";
+                    $stmt = $pdo_diendan->prepare($sql);
+                    $stmt->execute();
+                    $posts = $stmt->fetchAll();
+
+                    if ($posts) {
+                        $found = false;
+                        foreach ($posts as $post) 
+                        {
+                            // Ẩn bài viết nếu không khớp kết quả tìm kiếm
+                            if ($searchIds !== null && !in_array($post['id'], $searchIds)) {
+                                continue;
+                            }
+                            $found = true;
+
+                            $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/Y');
+                            $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
+
+                            echo "<div class='post-item'>";
+                            echo "<div class='ptvote'>";
+                            // Lấy tổng số vote
+                            $stmt = $pdo_diendan->prepare("
+                                SELECT SUM(vote) AS total_votes 
+                                FROM diendanvote 
+                                WHERE id = :id
+                            ");
+                            $stmt->execute([':id' => $post['id']]);
+                            $votes = $stmt->fetch(PDO::FETCH_ASSOC);
+                            $totalVotes = $votes['total_votes'] ?? 0;
+
+                            if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
+                                // Kiểm tra người dùng đã vote bài viết này chưa
+                                $stmt = $pdo_diendan->prepare("SELECT vote FROM diendanvote WHERE id = :id AND masv = :masv");
+                                $stmt->execute([':id' => $post['id'], ':masv' => $_SESSION['masv']]);
+                                $userVote = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                $upvoteActive = ($userVote && $userVote['vote'] == 1) ? "chose" : "default";
+                                $downvoteActive = ($userVote && $userVote['vote'] == -1) ? "chose" : "default";
+
+                                echo "<div class='vote' data-post-id='{$post['id']}'>";
+                                echo "<button class='upvote {$upvoteActive}' data-action='upvote'>";
+                                echo "<img src='icon/arrow-up.png' alt='Upvote' class='default'>";
+                                echo "<img src='icon/arrow-up-chose.png' alt='Upvote' class='chose'>";
+                                echo "</button>";
+                                echo "<span class='vote-count' id='vote-count-{$post['id']}'>" . $totalVotes . "</span>";
+                                echo "<button class='downvote {$downvoteActive}' data-action='downvote'>";
+                                echo "<img src='icon/arrow-down.png' alt='Downvote' class='default'>";
+                                echo "<img src='icon/arrow-down-chose.png' alt='Downvote' class='chose'>";
+                                echo "</button>";
+                                echo "</div>";
+                            } else if($totalVotes <=0)
+                            {
+                                echo "<span class='vote-count2' id='vote-count-{$post['id']}'>" . $totalVotes . " votes</span>";
+                            }
+                            else 
+                            {
+                                echo "<span class='vote-count1' id='vote-count-{$post['id']}'>" . $totalVotes . " votes</span>";
+                            }
+                            echo "</div>";
+                            echo "<div class='post-header'>";
+                                echo "<p class='post-user'>" . htmlspecialchars($post['ho_va_ten']) . "</p>";
+                                echo "<p class='post-time'>{$date} lúc {$time}</p>";
                                 if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) 
                                 {
-                                    echo '<button id="post-btn" onclick="toggleAddPostPopup()">';
-                                    echo "Xin chào " . htmlspecialchars($_SESSION['ho_va_ten']) . ", bạn muốn chia sẻ điều gì?";
-                                    echo '</button>';
-                                } 
-                                else
-                                {
-                                    echo '<button id="post-btn1" onclick="togglePopup()">Hôm nay bạn thế nào!!!</button>';
-                                }
-                            ?>
-                        </div>      
-                        <?php
-                        if (isset($_SESSION['message'])) 
-                        {
-                            echo "<div class='success-message'>" . $_SESSION['message'] . "</div>";
-                            unset($_SESSION['message']); 
-                        }
-
-                        if (isset($_SESSION['error'])) 
-                        {
-                            echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
-                            unset($_SESSION['error']);
-                        }
-                        ?>
-                        <?php
-                $sql = "SELECT * FROM diendanpost ORDER BY date DESC, time DESC";
-                $stmt = $pdo_diendan->prepare($sql);
-                $stmt->execute();
-                $posts = $stmt->fetchAll();
-
-                if ($posts) 
-                {
-                    foreach ($posts as $post) 
-                    {
-                        $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/yy  ');
-                        $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
-
-                        echo "<div class='post-item'>";
-                        echo "<div class='post-header'>";
-                        echo "<p class='post-user'>" . htmlspecialchars($post['ho_va_ten']) . "</p>";
-                        echo "<p class='post-time'>" . $date . " lúc " . $time . "</p>";
-                        echo "<div class='post-menu'>";
-                        echo "<button class='menu-btn'>⋮</button>";
-                        echo "<div class='menu-dropdown'>";
-
-                        if ($_SESSION['masv'] === $post['masv']) {
-                            echo "<button class='dropdown-btn' onclick='toggleEditPostPopup({$post['id']}, \"" . htmlspecialchars($post['title']) . "\", \"" . htmlspecialchars($post['content']) . "\")'>Chỉnh sửa</button>";
-                            echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
-                        } elseif ($_SESSION['role'] === 'admin') {
-                            echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
-                        } else {
-                            echo "<button class='dropdown-btn' onclick='reportPost({$post['id']})'>Tố cáo</button>";
-                        }
-
-                        echo "</div>";
-                        echo "</div>"; 
-                        echo "</div>"; 
-                        echo "<h3>" . htmlspecialchars($post['title']) . "</h3>";
-                        echo "<p>" . nl2br(htmlspecialchars($post['content'])) . "</p>";
-
-
-                        // Lấy tổng số vote
-                        $stmt = $pdo_diendan->prepare("
-                            SELECT 
-                                SUM(vote) AS total_votes 
-                            FROM diendanvote 
-                            WHERE id = :id
-                        ");
-
-                        $stmt->execute([':id' => $post['id']]);
-                        $votes = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                        $totalVotes = $votes['total_votes'] ?? 0;
-
-                        if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
-                            // Kiểm tra người dùng đã vote bài viết này chưa
-                            $stmt = $pdo_diendan->prepare("SELECT vote FROM diendanvote WHERE id = :id AND masv = :masv");
-                            $stmt->execute([':id' => $post['id'], ':masv' => $_SESSION['masv']]);
-                            $userVote = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                            // Trạng thái nút upvote và downvote
-                            $upvoteActive = ($userVote && $userVote['vote'] == 1) ? "chose" : "default";
-                            $downvoteActive = ($userVote && $userVote['vote'] == -1) ? "chose" : "default";
-                            
-                            echo "<div class='vote' data-post-id='{$post['id']}'>";
-                            echo "<button class='upvote {$upvoteActive}' data-action='upvote'>";
-                            echo "<img src='icon/arrow-up.png' alt='Upvote' class='default'>";
-                            echo "<img src='icon/arrow-up-chose.png' alt='Upvote' class='chose'>";
-                            echo "</button>";
-                            echo "<span class='vote-count' id='vote-count-{$post['id']}'>" . $totalVotes . "</span>";
-                            echo "<button class='downvote {$downvoteActive}' data-action='downvote'>";
-                            echo "<img src='icon/arrow-down.png' alt='Downvote' class='default'>";
-                            echo "<img src='icon/arrow-down-chose.png' alt='Downvote' class='chose'>";
-                            echo "</button>";
+                                    echo "<div class='post-menu'>";
+                                    echo "<button class='menu-btn'>⋮</button>";
+                                    echo "<div class='menu-dropdown'>";
+                                    if ($_SESSION['masv'] === $post['masv']) {
+                                        // Trong phần hiển thị bài viết, nếu người dùng có quyền chỉnh sửa
+                                        echo "<button class='dropdown-btn' onclick='toggleEditPostPopup({$post['id']}, \"" . htmlspecialchars($post['title']) . "\", \"" . htmlspecialchars($post['content']) . "\")'>Chỉnh sửa</button>";
+                                        echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
+                                    } elseif ($_SESSION['role'] === 'admin') {
+                                        echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
+                                    } else {
+                                        echo "<button class='dropdown-btn' onclick='reportPost({$post['id']})'>Tố cáo</button>";
+                                    }
+                                    echo "</div>"; // Đóng menu-dropdown
+                                    echo "</div>"; // Đóng post-menu
+                                    
+                            }
                             echo "</div>";
-                        } 
-                        else 
-                        {
-                            echo "<span class='vote-count' id='vote-count-{$post['id']}'>" . $totalVotes . " trending</span>";
+                            echo "<h3>" . htmlspecialchars($post['title']) . "</h3>";
+                            echo "<p>" . nl2br(htmlspecialchars($post['content'])) . "</p>";
+                            echo "</div>";
                         }
-                        echo "</div>";
+                        if (!$found) {
+                            echo "<p>Không tìm thấy kết quả nào cho từ khóa \"" . htmlspecialchars($_SESSION['search_term']) . "\".</p>";
+                        }
                     }
-                }
-                ?>
+                    ?>
                 </div>
                 </div>
                     
                 <div class="gopy">
-                <div class="trending">
+                    <div class="trending">
                         <h1>Trending</h1>
-                </div>
+                        <?php
+                        if (isset($_SESSION['role']) && $_SESSION['role'] == "admin") {
+                            echo '<button class="trending-btn">+</button>';
+                        }
+
+                        // Lấy 3 bài viết Góp Ý có số vote cao nhất
+                        $stmt = $pdo_diendan->prepare("
+                            SELECT 
+                                id, title, ho_va_ten, content, date, time,
+                                (SELECT SUM(vote) FROM diendanvote WHERE diendanvote.id = gopypost.id) AS total_votes
+                            FROM gopypost
+                            ORDER BY total_votes DESC
+                            LIMIT 3
+                        ");
+                        $stmt->execute();
+                        $trendingPosts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                        foreach ($trendingPosts as $post) {
+                            $title = htmlspecialchars($post['title']);
+                            $ho_va_ten = htmlspecialchars($post['ho_va_ten']);
+                            $content = nl2br(htmlspecialchars($post['content']));
+                            $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/Y');
+                            $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
+                            $totalVotes = $post['total_votes'] ?? 0;
+
+                            echo "<div class='trending-post'>";
+                            echo "<h2>{$title}</h2>";
+                            echo "<p><strong>{$ho_va_ten}</strong> ";
+                            echo "<br>{$date} lúc {$time}</p>";
+                            echo "<p><strong>Votes:</strong> {$totalVotes}</p>";
+                            echo "</div>";
+                        }
+                        ?>
+                    </div>
+
                     <div class="baiviet">
-                    <div id="post">
+                        <div id="post">
                             <?php
                             if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
-                                echo '<button id="post-btn" onclick="toggleAddPostPopup()">';
-                                echo "Xin chào " . htmlspecialchars($_SESSION['ho_va_ten']) . ", bạn muốn góp ý gì?";
-                                echo '</button>';
+                                echo '<button id="post-btn" onclick="toggleAddPostPopup()">Xin chào ' . htmlspecialchars($_SESSION['ho_va_ten']) . ', bạn muốn góp ý gì?</button>';
                             } else {
                                 echo '<button id="post-btn1" onclick="togglePopup()">Chúng tôi lắng nghe góp ý từ bạn!</button>';
                             }
                             ?>
-                        </div>                 
+                        </div>
                         <?php
-                        if (isset($_SESSION['message'])) {
-                            echo "<div class='success-message'>" . $_SESSION['message'] . "</div>";
-                            unset($_SESSION['message']);
-                        }
+                        // Lấy danh sách ID bài viết khớp với tìm kiếm
+                        $searchIds = $_SESSION['search_ids'] ?? null;
 
-                        if (isset($_SESSION['error'])) {
-                            echo "<div class='error-message'>" . $_SESSION['error'] . "</div>";
-                            unset($_SESSION['error']);
-                        }
-                        ?>
-                        <?php
                         $sql = "SELECT * FROM gopypost ORDER BY date DESC, time DESC";
                         $stmt = $pdo_diendan->prepare($sql);
                         $stmt->execute();
                         $posts = $stmt->fetchAll();
 
-                        if ($posts) 
-                {
-                    foreach ($posts as $post) 
-                    {
-                        $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/yy  ');
-                        $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
+                        if ($posts) {
+                            $found = false;
+                            foreach ($posts as $post) {
+                                // Ẩn bài viết nếu không khớp kết quả tìm kiếm
+                                if ($searchIds !== null && !in_array($post['id'], $searchIds)) {
+                                    continue;
+                                }
+                                $found = true;
 
-                        echo "<div class='post-item'>";
-                        echo "<div class='post-header'>";
-                        echo "<p class='post-user'>" . htmlspecialchars($post['ho_va_ten']) . "</p>";
-                        echo "<p class='post-time'>" . $date . " lúc " . $time . "</p>";
-                        echo "<div class='post-menu'>";
-                        echo "<button class='menu-btn'>⋮</button>";
-                        echo "<div class='menu-dropdown'>";
+                                $date = DateTime::createFromFormat('Y-m-d', $post['date'])->format('d/m/Y');
+                                $time = DateTime::createFromFormat('H:i:s', $post['time'])->format('H:i');
 
-                        if ($_SESSION['masv'] === $post['masv']) {
-                            echo "<button class='dropdown-btn' onclick='toggleEditPostPopup({$post['id']}, \"" . htmlspecialchars($post['title']) . "\", \"" . htmlspecialchars($post['content']) . "\")'>Chỉnh sửa</button>";
-                            echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
-                        } elseif ($_SESSION['role'] === 'admin') {
-                            echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
-                        } else {
-                            echo "<button class='dropdown-btn' onclick='reportPost({$post['id']})'>Tố cáo</button>";
+                                echo "<div class='post-item'>";
+                                echo "<div class='post-header'>";
+                                echo "<p class='post-user'>" . htmlspecialchars($post['ho_va_ten']) . "</p>";
+                                echo "<p class='post-time'>{$date} lúc {$time}</p>";
+
+                                if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
+                                    echo "<div class='post-menu'>";
+                                    echo "<button class='menu-btn'>⋮</button>";
+                                    echo "<div class='menu-dropdown'>";
+
+                                    if ($_SESSION['masv'] === $post['masv']) {
+                                        echo "<button class='dropdown-btn' onclick='toggleEditPostPopup({$post['id']}, \"" . htmlspecialchars($post['title']) . "\", \"" . htmlspecialchars($post['content']) . "\")'>Chỉnh sửa</button>";
+                                        echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
+                                    } elseif ($_SESSION['role'] === 'admin') {
+                                        echo "<button class='dropdown-btn' onclick='toggleDeletePostPopup({$post['id']})'>Xóa</button>";
+                                    } else {
+                                        echo "<button class='dropdown-btn' onclick='reportPost({$post['id']})'>Tố cáo</button>";
+                                    }
+
+                                    echo "</div></div>";
+                                }
+                                echo "</div>";
+
+                                echo "<h3>" . htmlspecialchars($post['title']) . "</h3>";
+                                echo "<p>" . nl2br(htmlspecialchars($post['content'])) . "</p>";
+
+                                // Lấy tổng số vote
+                                $stmt = $pdo_diendan->prepare("
+                                    SELECT SUM(vote) AS total_votes 
+                                    FROM gopyvote 
+                                    WHERE id = :id
+                                ");
+                                $stmt->execute([':id' => $post['id']]);
+                                $votes = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                $totalVotes = $votes['total_votes'] ?? 0;
+
+                                if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
+                                    $stmt = $pdo_diendan->prepare("SELECT vote FROM gopyvote WHERE id = :id AND masv = :masv");
+                                    $stmt->execute([':id' => $post['id'], ':masv' => $_SESSION['masv']]);
+                                    $userVote = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                                    $upvoteActive = ($userVote && $userVote['vote'] == 1) ? "chose" : "default";
+                                    $downvoteActive = ($userVote && $userVote['vote'] == -1) ? "chose" : "default";
+
+                                    echo "<div class='vote' data-post-id='{$post['id']}'>";
+                                    echo "<button class='upvote {$upvoteActive}' data-action='upvote'>";
+                                    echo "<img src='icon/arrow-up.png' alt='Upvote' class='default'>";
+                                    echo "<img src='icon/arrow-up-chose.png' alt='Upvote' class='chose'>";
+                                    echo "</button>";
+                                    echo "<span class='vote-count' id='vote-count-{$post['id']}'>{$totalVotes}</span>";
+                                    echo "<button class='downvote {$downvoteActive}' data-action='downvote'>";
+                                    echo "<img src='icon/arrow-down.png' alt='Downvote' class='default'>";
+                                    echo "<img src='icon/arrow-down-chose.png' alt='Downvote' class='chose'>";
+                                    echo "</button>";
+                                    echo "</div>";
+                                } else if($totalVotes <=0) {
+                                    echo "<span class='vote-count2' id='vote-count-{$post['id']}'>" . $totalVotes . " votes</span>";
+                                } else {
+                                    echo "<span class='vote-count1' id='vote-count-{$post['id']}'>" . $totalVotes . " votes</span>";
+                                }
+
+                                echo "</div>"; // end post-item
+                            }
+
+                            if (!$found) {
+                                echo "<p>Không tìm thấy kết quả nào cho từ khóa \"" . htmlspecialchars($_SESSION['search_term']) . "\".</p>";
+                            }
                         }
+                        ?>
+                    </div>
 
-                        echo "</div>";
-                        echo "</div>"; 
-                        echo "</div>"; 
-                        echo "<h3>" . htmlspecialchars($post['title']) . "</h3>";
-                        echo "<p>" . nl2br(htmlspecialchars($post['content'])) . "</p>";
-
-
-
-                        // Lấy tổng số vote
-                        $stmt = $pdo_diendan->prepare("
-                            SELECT 
-                                SUM(vote) AS total_votes 
-                            FROM diendanvote 
-                            WHERE id = :id
-                        ");
-
-                        $stmt->execute([':id' => $post['id']]);
-                        $votes = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                        $totalVotes = $votes['total_votes'] ?? 0;
-
-                        if (isset($_SESSION['masv']) && isset($_SESSION['ho_va_ten'])) {
-                            // Kiểm tra người dùng đã vote bài viết này chưa
-                            $stmt = $pdo_diendan->prepare("SELECT vote FROM diendanvote WHERE id = :id AND masv = :masv");
-                            $stmt->execute([':id' => $post['id'], ':masv' => $_SESSION['masv']]);
-                            $userVote = $stmt->fetch(PDO::FETCH_ASSOC);
-
-                            // Trạng thái nút upvote và downvote
-                            $upvoteActive = ($userVote && $userVote['vote'] == 1) ? "chose" : "default";
-                            $downvoteActive = ($userVote && $userVote['vote'] == -1) ? "chose" : "default";
-                            
-                            echo "<div class='vote' data-post-id='{$post['id']}'>";
-                            echo "<button class='upvote {$upvoteActive}' data-action='upvote'>";
-                            echo "<img src='icon/arrow-up.png' alt='Upvote' class='default'>";
-                            echo "<img src='icon/arrow-up-chose.png' alt='Upvote' class='chose'>";
-                            echo "</button>";
-                            echo "<span class='vote-count' id='vote-count-{$post['id']}'>" . $totalVotes . "</span>";
-                            echo "<button class='downvote {$downvoteActive}' data-action='downvote'>";
-                            echo "<img src='icon/arrow-down.png' alt='Downvote' class='default'>";
-                            echo "<img src='icon/arrow-down-chose.png' alt='Downvote' class='chose'>";
-                            echo "</button>";
-                            echo "</div>";
-                        } 
-                        else 
-                        {
-                            echo "<span class='vote-count' id='vote-count-{$post['id']}'>" . $totalVotes . " trending</span>";
-                        }
-                        echo "</div>";
-                    }
-                }
-                ?>
-                </div>
-                </div>
                 </div>
             </div>
         </div>
@@ -318,15 +409,16 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
             <div class="popup-content">
                 <span class="close-btn" onclick="toggleAddPostPopup()">✖</span>
                 <div class="form-wrapper">
-                    <form id="post-form" method="POST">
-                        <h2>Thêm bài viết mới</h2>
+                    <form id="post-form" method="POST" action="save_post.php">
+                        <h2>Chỉnh sửa bài viết</h2>
                         <input type="text" name="title" id="post-title" placeholder="Tiêu đề bài viết" required />
                         <textarea name="content" id="post-content" placeholder="Nội dung bài viết" rows="10" maxlength="5000" required></textarea>
-                        <button type="submit">Đăng bài</button>
+                        <button type="submit">Lưu thay đổi</button>
                     </form>
                 </div>
             </div>
         </div>
+
 
         <!-- Popup Đăng Nhập/Đăng Ký -->
         <div id="login-register">
@@ -397,7 +489,8 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
             </div>
         </div>
     </div>
-
+        
+        
         <script src="/function/java/post_enviromet.js"></script>
         <script src="/function/java/vote.js"></script>
         <script src="/function/java/post-status.js"></script>

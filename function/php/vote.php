@@ -7,7 +7,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
     $postId = $data['id'] ?? null;
     $action = $data['action'] ?? null;
-    $masv = $_SESSION['masv'];
+    $masv = $_SESSION['masv'] ?? null;
+
+    // Ensure session variable is set
+    if (!$masv) {
+        echo json_encode(['success' => false, 'message' => 'Chưa đăng nhập']);
+        exit;
+    }
 
     // Kiểm tra xem đang ở phần diễn đàn hay góp ý
     $isGopy = isset($data['is_gopy']) && $data['is_gopy'] === true;

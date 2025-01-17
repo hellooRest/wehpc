@@ -4,6 +4,7 @@ const btnGopy = document.getElementById('btn-gopy');
 const searchButton = document.querySelector('#search-button');
 const timeBar = document.getElementById('time');
 const searchForm = document.getElementById('search-form');
+const activeSection = document.getElementById("active-section");
 
 // Hàm cập nhật placeholder dựa trên nút đang active
 function setInitialPlaceholder() {
@@ -14,16 +15,23 @@ function setInitialPlaceholder() {
     }
 }
 
-// Cập nhật placeholder khi trang tải lần đầu
-document.addEventListener('DOMContentLoaded', setInitialPlaceholder);
+// Cập nhật placeholder và giá trị khi trang tải lần đầu
+document.addEventListener('DOMContentLoaded', () => {
+    setInitialPlaceholder();
+
+    // Load lại giá trị tìm kiếm từ session (truyền an toàn qua data-attribute)
+    const searchTerm = searchInput.dataset.searchTerm || '';
+    if (searchTerm) {
+        searchInput.value = searchTerm;
+    }
+});
 
 // Sự kiện click cho nút Diễn Đàn
 btnDiendan.addEventListener('click', () => {
     btnDiendan.classList.add('active');
     btnGopy.classList.remove('active');
     searchInput.placeholder = 'Tìm kiếm trong diễn đàn...';
-    document.getElementById('active-section').value = 'diendan';  // Gửi giá trị "diendan"
-    console.log(document.getElementById('active-section').value); // Kiểm tra
+    activeSection.value = 'diendan'; // Gửi giá trị "diendan"
 });
 
 // Sự kiện click cho nút Góp Ý
@@ -31,27 +39,40 @@ btnGopy.addEventListener('click', () => {
     btnGopy.classList.add('active');
     btnDiendan.classList.remove('active');
     searchInput.placeholder = 'Tìm kiếm trong góp ý...';
-    document.getElementById('active-section').value = 'gopy';  // Gửi giá trị "gopy"
-    console.log(document.getElementById('active-section').value); // Kiểm tra
+    activeSection.value = 'gopy'; // Gửi giá trị "gopy"
 });
+
+searchInput.addEventListener("input", () => {
+    const searchTerm = searchInput.value.trim();
+
+    if (searchTerm === "") {
+        localStorage.removeItem("searchTerm");
+        // Chỉ reset trang nếu không phải do người dùng xóa thủ công
+        if (document.activeElement !== searchInput) {
+            window.location.href = "/home.php";
+        }
+    } else {
+        localStorage.setItem("searchTerm", searchTerm);
+    }
+});
+
 
 // Sự kiện click cho nút tìm kiếm
 searchButton.addEventListener('click', (event) => {
     if (window.innerWidth <= 500) {
+        // Hiển thị hoặc thu nhỏ input tìm kiếm
         if (searchInput.style.visibility === 'hidden') {
-            // Mở rộng input tìm kiếm và ẩn thanh thời gian
             searchInput.style.visibility = 'visible';
             searchInput.style.width = '30vw';
             timeBar.style.marginLeft = '0';
         } else {
-            // Thu nhỏ input tìm kiếm và hiển thị thanh thời gian
             searchInput.style.visibility = 'hidden';
             searchInput.style.width = '0';
             timeBar.style.marginLeft = '2vw';
         }
     } else {
-        if (searchInput.style.visibility !== 'hidden' && searchInput.value.trim() !== '') {
-            // Gửi form tìm kiếm tới server
+        if (searchInput.value.trim() !== '') {
+            // Gửi form tìm kiếm
             searchForm.submit();
         }
     }

@@ -3,43 +3,40 @@ document.querySelectorAll('.vote').forEach(voteContainer => {
     const downvoteButton = voteContainer.querySelector('.downvote');
     const voteCount = voteContainer.querySelector('.vote-count');
     const postId = voteContainer.getAttribute('data-post-id');
-    const body = document.querySelector('.body'); // Lấy trạng thái của body (diễn đàn/góp ý)
+    const body = document.querySelector('.body'); // Kiểm tra phần diễn đàn hay góp ý
 
     // Hàm gửi yêu cầu vote
     function sendVote(action) {
-        // Kiểm tra nếu đang ở phần góp ý (gopy)
-        const isGopy = body.classList.contains('active');
+        const isGopy = body.classList.contains('active'); // Xác định phần góp ý hay diễn đàn
         
-        fetch('function/php/vote.php', 
-            {
+        // Cập nhật giao diện ngay khi nhấn nút
+        if (action === 'upvote') {
+            upvoteButton.classList.add('chose');
+            downvoteButton.classList.remove('chose');
+        } else if (action === 'downvote') {
+            downvoteButton.classList.add('chose');
+            upvoteButton.classList.remove('chose');
+        } else if (action === 'remove') {
+            upvoteButton.classList.remove('chose');
+            downvoteButton.classList.remove('chose');
+        }
+
+        fetch('function/php/vote.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 id: postId,
                 action: action,
-                is_gopy: isGopy // Gửi trạng thái để xác định phần vote
+                is_gopy: isGopy
             })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Cập nhật tổng số vote trực tiếp
+                // Cập nhật tổng số vote từ server
                 voteCount.textContent = data.total_votes;
-
-                // Cập nhật trạng thái nút vote
-                if (action === 'upvote') {
-                    upvoteButton.classList.add('chose');
-                    downvoteButton.classList.remove('chose');
-                } else if (action === 'downvote') {
-                    downvoteButton.classList.add('chose');
-                    upvoteButton.classList.remove('chose');
-                } else if (action === 'remove') {
-                    // Xóa trạng thái nút
-                    upvoteButton.classList.remove('chose');
-                    downvoteButton.classList.remove('chose');
-                }
             } else {
-                alert(data.message);
+                alert(data.message); // Thông báo lỗi nếu có
             }
         })
         .catch(error => {
