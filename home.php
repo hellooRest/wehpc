@@ -409,11 +409,11 @@ unset($_SESSION['error_message']); // Xóa lỗi sau khi load
             <div class="popup-content">
                 <span class="close-btn" onclick="toggleAddPostPopup()">✖</span>
                 <div class="form-wrapper">
-                    <form id="post-form" method="POST" action="save_post.php">
-                        <h2>Chỉnh sửa bài viết</h2>
+                    <form id="post-form" method="POST">
+                        <h2>Thêm bài viết mới</h2>
                         <input type="text" name="title" id="post-title" placeholder="Tiêu đề bài viết" required />
                         <textarea name="content" id="post-content" placeholder="Nội dung bài viết" rows="10" maxlength="5000" required></textarea>
-                        <button type="submit">Lưu thay đổi</button>
+                        <button type="submit">Đăng bài</button>
                     </form>
                 </div>
             </div>

@@ -9,15 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $content = $_POST['content'];
 
         // Lấy thời gian từ API
-        try {
-            $currentDateTime = get_time_from_api();
-            $date = $currentDateTime->format('Y-m-d');
-            $time = $currentDateTime->format('H:i:s');
-        } catch (Exception $e) {
-            $_SESSION['error'] = "Lỗi khi lấy thời gian: " . $e->getMessage();
-            header("Location: ../../home.php");
-            exit();
-        }
+        $currentDateTime = get_time_from_api();
+        $date = $currentDateTime->format('Y-m-d');
+        $time = $currentDateTime->format('H:i:s');
 
         $sql = "INSERT INTO diendanpost (ho_va_ten, masv, title, content, date, time) VALUES (:ho_va_ten, :masv, :title, :content, :date, :time)";
         $stmt = $pdo_diendan->prepare($sql);

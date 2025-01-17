@@ -1,4 +1,4 @@
-// Toggle Hiển Thị Popup
+    // Toggle Hiển Thị Popup
 function togglePopup() 
 {
     const popup = document.getElementById("login-register");

@@ -4,6 +4,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const postForm = document.getElementById('post-form');
     const voteButtons = document.querySelectorAll('.vote button');
     const searchInput = document.getElementById('search-input'); // Input tìm kiếm
+    const successMessage = document.querySelector('.success-message');
+    const errorMessage = document.querySelector('.error-message');
 
     // Xử lý chuyển đổi trạng thái giữa diendan và gopy
     switchBtns.forEach((btn) => {
@@ -82,16 +84,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        const voteCount = document.getElementById(vote-count-${postId});
+                        const voteCount = document.getElementById(`vote-count-${postId}`);
                         voteCount.textContent = data.totalVotes; // Cập nhật số vote
                     } else {
                         alert(data.message || 'Đã xảy ra lỗi!');
                     }
                 })
-                .catch(err => {
-                    console.error('Error:', err);
-                    alert('Lỗi kết nối đến máy chủ!');
-                });
+                
         });
     });
 });
